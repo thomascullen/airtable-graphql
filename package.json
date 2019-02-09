@@ -1,6 +1,6 @@
 {
   "name": "airtable-graphql",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "Deploy a GraphQL server for an airtable base",
   "main": "index.js",
   "bin": {
