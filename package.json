@@ -1,0 +1,24 @@
+{
+  "name": "airtable-graphql",
+  "version": "1.0.6",
+  "description": "Deploy a GraphQL server for an airtable base",
+  "main": "index.js",
+  "bin": {
+    "airtable-graphql": "bin/cli.js"
+  },
+  "keywords": [
+    "airtable",
+    "graphql"
+  ],
+  "author": "Thomas Cullen",
+  "license": "MIT",
+  "dependencies": {
+    "airtable": "^0.5.8",
+    "apollo-server": "^2.3.3",
+    "camelcase": "^5.0.0",
+    "commander": "^2.19.0",
+    "graphql": "^14.1.1",
+    "pluralize": "^7.0.0",
+    "puppeteer": "^1.12.2"
+  }
+}
