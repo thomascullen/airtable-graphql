@@ -17,7 +17,7 @@ npm install airtable-graphql --save
 Pull your airtable schema by running the `airtable-graphql pull` command in the root folder of your project.
 
 ```
-$ aitable-graphql pull --email=[your_email] --password=[your_password] --base=[base_id]
+$ airtable-graphql pull --email=[your_email] --password=[your_password] --base=[base_id]
 ```
 
 This will create a `schema.json` file which describes all of your bases tables and columns.
