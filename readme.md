@@ -22,10 +22,10 @@ $ airtable-graphql pull --email=[your_email] --password=[your_password] --base=[
 
 This will create a `schema.json` file which describes all of your bases tables and columns.
 
-Use the airtable-graphql command to start the adapter
+Use the `airtable-graphql start` command to start the adapter
 
 ```
-$ airtable-graphql start -s schema.json -p 8765
+$ AIRTABLE_API_KEY={{api_key}} airtable-graphql start -s schema.json -p 8765
 ```
 
 Open your browser to localhost:8765 to start writing GraphQL queries against your Airtable data.

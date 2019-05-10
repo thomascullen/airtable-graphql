@@ -26,7 +26,7 @@ program
   .option('-p --port [port]', 'Port for the adapter to listen on', '8765')
   .action(function (cmd) {
     const api = new AirtableGraphQL(process.env.AIRTABLE_API_KEY, {schemaPath: cmd.schema});
-    api.listen({port: cmd.port}).then(() => console.log('done')).catch((e) => console.log(e));
+    api.listen({port: cmd.port});
   });
 
 program.parse(process.argv);
