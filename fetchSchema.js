@@ -10,55 +10,7 @@ module.exports = async config => {
   await page.keyboard.press("Enter");
   await page.waitForNavigation();
   const schema = await page.evaluate(() => {
-    return {
-      tables: application.tables.map(table => ({
-        name: table.name,
-        columns: table.columns.map(column => {
-          let options = {};
-
-          if (column.type === "select") {
-            options = {
-              choices: Object.values(column.typeOptions.choices).map(c => {
-                return c.name;
-              })
-            };
-          }
-
-          if (column.type === 'foreignKey') {
-            options = {
-              relationship: column.typeOptions.relationship,
-              table: column.foreignTable.name
-            }
-          }
-
-          if (column.type === 'multiSelect') {
-            options = {
-              choices: Object.values(column.typeOptions.choices).map(c => {
-                return c.name
-              })
-            }
-          }
-
-          if (column.type === 'number') {
-            options = {
-              format: column.typeOptions.format
-            }
-          }
-
-          if (column.type === 'number') {
-            options = {
-              format: column.typeOptions.format
-            }
-          }
-
-          return {
-            name: column.name,
-            type: column.type,
-            options: options
-          }
-        })
-      }))
-    };
+    return application;
   });
   await browser.close();
   return {

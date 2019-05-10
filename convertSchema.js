@@ -12,6 +12,70 @@ const {
 const sanitize = require("./sanitize");
 
 module.exports = (airtableSchema, columnSupport) => {
+
+  let tablesById = {};
+
+  airtableSchema.tables.map(table => {
+    tablesById[table.id] = table;
+  });
+  
+  const modifiedSchema = {
+    tables: airtableSchema.tables.map(table => ({
+      name: table.name,
+      columns: table.columns.map(column => {
+        let options = {};
+
+        if (column.type === "select") {
+          options = {
+            choices: Object.values(column.typeOptions.choices).map(c => {
+              return c.name;
+            })
+          };
+        }
+
+        if (column.type === 'foreignKey') {
+          let tableName;
+          if (column.foreignTable && column.foreignTable.name) {
+            tableName = column.foreignTable.name;
+          }
+          else {
+            tableName = tablesById[column.typeOptions.foreignTableId].name;
+          }
+          options = {
+            relationship: column.typeOptions.relationship,
+            table: tableName
+          }
+        }
+
+        if (column.type === 'multiSelect') {
+          options = {
+            choices: Object.values(column.typeOptions.choices).map(c => {
+              return c.name
+            })
+          }
+        }
+
+        if (column.type === 'number') {
+          options = {
+            format: column.typeOptions.format
+          }
+        }
+
+        if (column.type === 'number') {
+          options = {
+            format: column.typeOptions.format
+          }
+        }
+
+        return {
+          name: column.name,
+          type: column.type,
+          options: options
+        }
+      })
+    }))
+  };
+
   const TYPES = [];
 
   const queryType = {
@@ -26,7 +90,7 @@ module.exports = (airtableSchema, columnSupport) => {
     type: new GraphQLList(GraphQLString)
   };
 
-  airtableSchema.tables.forEach(table => {
+  modifiedSchema.tables.forEach(table => {
     TYPES[table.name] = new GraphQLObjectType({
       name: sanitize.toType(table.name),
       fields: () => ({
