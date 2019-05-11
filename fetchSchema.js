@@ -5,13 +5,11 @@ function removeForeignTables(obj) {
   if (typeof obj === 'object') {
     let result = {};
     for (let key in obj) {
-      console.log(`Visiting ${key}`);
       if (obj.hasOwnProperty(key) && key !== 'foreignTable') {
         result[key] = removeForeignTables(obj[key]);
       }
     }
     if (Array.isArray(obj)) {
-      console.log("Converting int-keyed dictionary to array");
       {
         let arrayResult = [];
         for (let i = 0; i < obj.length; i++) {
@@ -22,7 +20,6 @@ function removeForeignTables(obj) {
     }
     return result;
   } else {
-    console.log(`Returning scalar ${obj}`);
     return obj;
   }
 }
