@@ -21,7 +21,7 @@ function reformatSchema(airtableSchema) {
   return {
     tables: airtableSchema.tables.map(table => ({
       name: table.name,
-      columns: table.columns.map(column => {
+      columns: table.columns.filter(column => !['lookup', 'formula', 'rollup'].includes(column.type)).map(column => {
         let options = {};
 
         if (column.type === "select") {
@@ -51,12 +51,6 @@ function reformatSchema(airtableSchema) {
             choices: Object.values(column.typeOptions.choices).map(c => {
               return c.name
             })
-          }
-        }
-
-        if (column.type === 'number') {
-          options = {
-            format: column.typeOptions.format
           }
         }
 
