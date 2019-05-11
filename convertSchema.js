@@ -11,15 +11,14 @@ const {
 } = require("graphql");
 const sanitize = require("./sanitize");
 
-module.exports = (airtableSchema, columnSupport) => {
-
+function reformatSchema(airtableSchema) {
   let tablesById = {};
 
   airtableSchema.tables.map(table => {
     tablesById[table.id] = table;
   });
-  
-  const modifiedSchema = {
+
+  return {
     tables: airtableSchema.tables.map(table => ({
       name: table.name,
       columns: table.columns.map(column => {
@@ -75,6 +74,9 @@ module.exports = (airtableSchema, columnSupport) => {
       })
     }))
   };
+}
+
+function convertSchema(airtableSchema, columnSupport) {
 
   const TYPES = [];
 
@@ -90,7 +92,7 @@ module.exports = (airtableSchema, columnSupport) => {
     type: new GraphQLList(GraphQLString)
   };
 
-  modifiedSchema.tables.forEach(table => {
+  airtableSchema.tables.forEach(table => {
     TYPES[table.name] = new GraphQLObjectType({
       name: sanitize.toType(table.name),
       fields: () => ({
@@ -125,4 +127,9 @@ module.exports = (airtableSchema, columnSupport) => {
   return new GraphQLSchema({
     query: new GraphQLObjectType(queryType)
   });
+}
+
+module.exports = {
+  reformatSchema,
+  convertSchema
 };
