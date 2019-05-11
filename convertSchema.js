@@ -11,7 +11,68 @@ const {
 } = require("graphql");
 const sanitize = require("./sanitize");
 
-module.exports = (airtableSchema, columnSupport) => {
+function reformatSchema(airtableSchema) {
+  let tablesById = {};
+
+  airtableSchema.tables.map(table => {
+    tablesById[table.id] = table;
+  });
+
+  return {
+    tables: airtableSchema.tables.map(table => ({
+      name: table.name,
+      columns: table.columns.filter(column => !['lookup', 'formula', 'rollup'].includes(column.type)).map(column => {
+        let options = {};
+
+        if (column.type === "select") {
+          options = {
+            choices: Object.values(column.typeOptions.choices).map(c => {
+              return c.name;
+            })
+          };
+        }
+
+        if (column.type === 'foreignKey') {
+          let tableName;
+          if (column.foreignTable && column.foreignTable.name) {
+            tableName = column.foreignTable.name;
+          }
+          else {
+            tableName = tablesById[column.typeOptions.foreignTableId].name;
+          }
+          options = {
+            relationship: column.typeOptions.relationship,
+            table: tableName
+          }
+        }
+
+        if (column.type === 'multiSelect') {
+          options = {
+            choices: Object.values(column.typeOptions.choices).map(c => {
+              return c.name
+            })
+          }
+        }
+
+        if (column.type === 'number') {
+          options = {
+            format: column.typeOptions.format,
+            symbol: column.typeOptions.symbol
+          }
+        }
+
+        return {
+          name: column.name,
+          type: column.type,
+          options: options
+        }
+      })
+    }))
+  };
+}
+
+function convertSchema(airtableSchema, columnSupport) {
+
   const TYPES = [];
 
   const queryType = {
@@ -61,4 +122,9 @@ module.exports = (airtableSchema, columnSupport) => {
   return new GraphQLSchema({
     query: new GraphQLObjectType(queryType)
   });
+}
+
+module.exports = {
+  reformatSchema,
+  convertSchema
 };

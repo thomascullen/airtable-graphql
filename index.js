@@ -1,24 +1,26 @@
 const { printSchema } = require("graphql");
 const { ApolloServer } = require("apollo-server");
-const convertSchema = require("./convertSchema");
+const { convertSchema, reformatSchema } = require("./convertSchema");
 const createResolvers = require("./createResolvers");
 const airtable = require("airtable");
-const fs = require('fs')
+const fs = require('fs');
 
 class AirtableGraphQL {
   constructor(apiKey, config = {}) {
     this.columns = {};
     airtable.configure({ apiKey });
-    const schema = JSON.parse(fs.readFileSync(config.schemaPath || "./schema.json", "utf8"));
 
-    var normalizedPath = require("path").join(__dirname, "columns");
+    const rawSchema = JSON.parse(fs.readFileSync(config.schemaPath || "./schema.json", "utf8"));
+    const schema = reformatSchema(rawSchema);
+
+    const normalizedPath = require("path").join(__dirname, "columns");
     require("fs")
       .readdirSync(normalizedPath)
       .forEach(file => {
         require("./columns/" + file)(this);
       });
 
-    this.api = airtable.base(schema.id);
+    this.api = airtable.base(rawSchema.id);
     this.schema = convertSchema(schema, this.columns);
 
     this.resolvers = createResolvers(

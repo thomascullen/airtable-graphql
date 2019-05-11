@@ -8,15 +8,15 @@ module.exports = airtableGraphql => {
       }
 
       if (column.options.format === "currency") {
-        return { type: graphql.GraphQLString };
+        return { type: graphql.GraphQLFloat };
       }
 
       if (column.options.format === "percent") {
-        return { type: graphql.GraphQLString };
+        return { type: graphql.GraphQLInt };
       }
 
       if (column.options.format === "duration") {
-        return { type: graphql.GraphQLString };
+        return { type: graphql.GraphQLInt };
       }
 
       return { type: graphql.GraphQLInt };
@@ -24,14 +24,6 @@ module.exports = airtableGraphql => {
 
     resolver: (column, api) => (obj) => {
       let value = obj.fields[column.name];
-
-      if (column.options.format === "currency") {
-        value = `${column.options.symbol}${value}`;
-      }
-
-      if (column.options.format === "percent") {
-        value = `${value}%`;
-      }
 
       return value;
     }
