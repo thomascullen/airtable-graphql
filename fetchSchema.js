@@ -1,5 +1,32 @@
 const puppeteer = require("puppeteer");
 
+function removeForeignTables(obj) {
+  console.log(typeof obj);
+  if (typeof obj === 'object') {
+    let result = {};
+    for (let key in obj) {
+      console.log(`Visiting ${key}`);
+      if (obj.hasOwnProperty(key) && key !== 'foreignTable') {
+        result[key] = removeForeignTables(obj[key]);
+      }
+    }
+    if (Array.isArray(obj)) {
+      console.log("Converting int-keyed dictionary to array");
+      {
+        let arrayResult = [];
+        for (let i = 0; i < obj.length; i++) {
+          arrayResult.push(result[String(i)]);
+        }
+        result = arrayResult;
+      }
+    }
+    return result;
+  } else {
+    console.log(`Returning scalar ${obj}`);
+    return obj;
+  }
+}
+
 module.exports = async config => {
   console.log("Fetching schema...");
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
@@ -10,7 +37,7 @@ module.exports = async config => {
   await page.keyboard.press("Enter");
   await page.waitForNavigation();
   const schema = await page.evaluate(() => {
-    return application;
+    return removeForeignTables(application);
   });
   await browser.close();
   return {
