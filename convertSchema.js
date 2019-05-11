@@ -56,7 +56,8 @@ function reformatSchema(airtableSchema) {
 
         if (column.type === 'number') {
           options = {
-            format: column.typeOptions.format
+            format: column.typeOptions.format,
+            symbol: column.typeOptions.symbol
           }
         }
 
