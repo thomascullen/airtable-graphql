@@ -13,7 +13,7 @@
   "author": "Thomas Cullen",
   "license": "MIT",
   "dependencies": {
-    "airtable": "^0.5.8",
+    "airtable": "^0.7.2",
     "apollo-server": "^2.3.3",
     "camelcase": "^5.0.0",
     "commander": "^2.19.0",
