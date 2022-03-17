@@ -1,3 +1,8 @@
+# Deprecated
+
+Unfortunately I don't have time to work on this project anymore and wont be making any further updates.
+
+
 # Airtable GraphQL
 
 Quickly deploy a GraphQL API for an airtable base in just a few lines of code.
