@@ -1,5 +1,29 @@
 const puppeteer = require("puppeteer");
 
+function removeForeignTables(obj) {
+  console.log(typeof obj);
+  if (typeof obj === 'object') {
+    let result = {};
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key) && key !== 'foreignTable') {
+        result[key] = removeForeignTables(obj[key]);
+      }
+    }
+    if (Array.isArray(obj)) {
+      {
+        let arrayResult = [];
+        for (let i = 0; i < obj.length; i++) {
+          arrayResult.push(result[String(i)]);
+        }
+        result = arrayResult;
+      }
+    }
+    return result;
+  } else {
+    return obj;
+  }
+}
+
 module.exports = async config => {
   console.log("Fetching schema...");
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
@@ -10,55 +34,7 @@ module.exports = async config => {
   await page.keyboard.press("Enter");
   await page.waitForNavigation();
   const schema = await page.evaluate(() => {
-    return {
-      tables: application.tables.map(table => ({
-        name: table.name,
-        columns: table.columns.map(column => {
-          let options = {};
-
-          if (column.type === "select") {
-            options = {
-              choices: Object.values(column.typeOptions.choices).map(c => {
-                return c.name;
-              })
-            };
-          }
-
-          if (column.type === 'foreignKey') {
-            options = {
-              relationship: column.typeOptions.relationship,
-              table: column.foreignTable.name
-            }
-          }
-
-          if (column.type === 'multiSelect') {
-            options = {
-              choices: Object.values(column.typeOptions.choices).map(c => {
-                return c.name
-              })
-            }
-          }
-
-          if (column.type === 'number') {
-            options = {
-              format: column.typeOptions.format
-            }
-          }
-
-          if (column.type === 'number') {
-            options = {
-              format: column.typeOptions.format
-            }
-          }
-
-          return {
-            name: column.name,
-            type: column.type,
-            options: options
-          }
-        })
-      }))
-    };
+    return removeForeignTables(application);
   });
   await browser.close();
   return {
